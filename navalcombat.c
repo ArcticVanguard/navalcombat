@@ -1,6 +1,7 @@
-/* Include */
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /* Define */
 #define MAXFPS 30
@@ -21,21 +22,23 @@ typedef struct {
 	int velocity;
 	float acceleration;
 	float maxvel;
-	const int collisionbox[2];
-	const int rotationspeed;
+	int collisionbox[2];
+	int rotationspeed;
 } Mook;
 
 typedef struct {
-	const unsigned int ammo;
-	const int coords[2];
+	unsigned int ammo;
+	int coords[2];
 } Crate;
 
 /* Function declaration */
 float calcforce(float m, float a);
-static Crate *createcrate(const unsigned int a, const int* c);
+static Crate *createcrate(unsigned int a, int* c);
 static Mook *createmook(int a, bool p, int *cb, float *c, int h, float ms, int mv, int rs);
 void die(const char *errstr, ...);
-int *genCoords();
+static void seedrand(void);
+static int genrand(int a);
+int *gencoords(void);
 
 /* Function definitions */
 
@@ -46,12 +49,13 @@ float calcforce(float m, float a) {
 }
 
 Crate *
-createcrate(const unsigned int a, const int* c) {
+createcrate(unsigned int a, int* c) {
 	Crate *r;
-	if(!(m = (Crate *)calloc(1, sizeof(Crate))))
+	if(!(r = (Crate *)calloc(1, sizeof(Crate))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Crate));
-	r->ammo   = a;
-	r->coords = &c;
+	r->ammo      = a;
+	r->coords[0] = c[0];
+	r->coords[1] = c[1];
 	return r;
 }
 
@@ -61,18 +65,20 @@ createmook(int a, bool p, int *cb, float *c, int h, float ms, int mv, int rs) {
 	Mook *m;
 	if(!(m = (Mook *)calloc(1, sizeof(Mook))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Mook));
-	m->ammo          = a;
-	m->isalive       = true;
-	m->player        = p;
+	m->ammo            = a;
+	m->isalive         = true;
+	m->player          = p;
 
-	m->acceleration  = 0;
-	m-collisionbox   = &cb;
-	m->coords        = &c;
-	m->heading       = h;
-	m->mass          = ms;
-	m->maxvel        = mv;
-	m->rotationspeed = rs;
-	m->velocity      = 0;
+	m->acceleration    = 0;
+	m->collisionbox[0] = cb[0];
+	m->collisionbox[1] = cb[1];
+	m->coords[0]       = c[0];
+	m->coords[1]       = c[1];
+	m->heading         = h;
+	m->mass            = ms;
+	m->maxvel          = mv;
+	m->rotationspeed   = rs;
+	m->velocity        = 0;
 
 	return m;
 }
@@ -88,14 +94,23 @@ die(const char *errstr, ...) {
 	exit(EXIT_FAILURE);
 }
 
-int
-*genCoords() {
+int *
+gencoords(void) {
 	static int ret[2];
-	ret[0]=random(WINDOWWIDTH);
-	ret[1]=random(WINDOWHEIGHT);
+	ret[0]=genrand(WINDOWWIDTH);
+	ret[1]=genrand(WINDOWHEIGHT);
 	return ret;
 }
 
+int
+genrand(int a) {
+	int r = rand();
+	return r % a;
+}
+
+void seedrand(void) { srand(time(NULL)); }
+
 /* Main */
 void main() {
+	return;
 }
