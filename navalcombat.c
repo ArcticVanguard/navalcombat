@@ -69,7 +69,6 @@ createmook(int a, bool p, int *cb, float *c, int h, float ms, int mv, int rs) {
 	m-collisionbox   = &cb;
 	m->coords        = &c;
 	m->heading       = h;
-	m->isalive       = true;
 	m->mass          = ms;
 	m->maxvel        = mv;
 	m->rotationspeed = rs;
